@@ -1,47 +1,38 @@
-package project_one;
+package app;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import data.*;
 import javafx.scene.Scene;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
-import project_one.*;
 
-public class LineChartTask extends Application {
-	private XYChart.Series<String,Number> createLineSeries(Datenbasis daten) {
+public class PieChartTask extends Application{
 
-		XYChart.Series result = new XYChart.Series<String,Number>();
-		result.setName("series name");
-		
+	private ObservableList<PieChart.Data> createPieDataSet(Datenbasis daten) {
+
+		ObservableList<PieChart.Data> list = 
+				FXCollections.observableArrayList();
+	
 		for (int i = 0; i < daten.getBeobachtungsraum().length; i++) {
-			result.getData().add(new XYChart.Data<String,Number>(
+			list.add(new PieChart.Data(
 					daten.getBeobachtungsraum()[i], 
 					daten.getMerkmalsauspraegungen()[i].doubleValue()));
 		}
 
-		return result;
+		return list;
 	}
 	
 	@Override
 	public void start(Stage stage) throws Exception {
 	    Datenbasis data = new ConcatenatedData();
-	    
-	    CategoryAxis xAxis = new CategoryAxis();
-	    xAxis.setLabel(data.getNameBeobachtungsraum());
-	    NumberAxis yAxis = new NumberAxis();
-	    yAxis.setLabel(data.getNameMerkmalsauspraegung());
+		
+	    ObservableList<PieChart.Data> pieChartData = createPieDataSet(data);
 	    
     	// Erstellen und Beschriften des Diagramms
-       	final LineChart chart = new LineChart(xAxis,yAxis);
+       	final PieChart chart = new PieChart(pieChartData);
         chart.setTitle(data.getTopic());
-        
-        chart.getData().add(createLineSeries(data));
         
         // Rendern des Diagramms
         Scene scene = new Scene(chart,888,666);
@@ -54,4 +45,5 @@ public class LineChartTask extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+	
 }

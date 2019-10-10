@@ -1,4 +1,4 @@
-package project_one;
+package data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +13,7 @@ public class ConcatenatedData implements Datenbasis {
 		String[] months_2012 = data_2012.getBeobachtungsraum();
 		String[] months_2013 = data_2013.getBeobachtungsraum();
 		String[] months_2014 = data_2014.getBeobachtungsraum();
-				
+
 		Stream<String> m12 = Arrays.stream(months_2012).map(a -> a.concat(", 2012"));
 		Stream<String> m13 = Arrays.stream(months_2013).map(a -> a.concat(", 2013"));
 		Stream<String> m14 = Arrays.stream(months_2014).map(a -> a.concat(", 2014"));
@@ -31,7 +31,7 @@ public class ConcatenatedData implements Datenbasis {
 	}
 
 	public String getTopic() {
-		return "Wärmebedarf Bau2 aus den Jahren 2012/2013/2014";
+		return "Waermebedarf Bau2 aus den Jahren 2012/2013/2014";
 	}
 
 	public Number[] getMerkmalsauspraegungen() {

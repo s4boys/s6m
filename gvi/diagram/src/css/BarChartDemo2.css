@@ -1,0 +1,5 @@
+.default-color0.chart-bar { -fx-bar-fill: blue; }
+.axis{
+  -fx-tick-label-font-size: 1.0em;
+  -fx-tick-unit: 1
+}
