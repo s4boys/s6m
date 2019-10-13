@@ -37,4 +37,11 @@ public class Notenverteilung implements Datenbasis{
 	public Number[] getMerkmalsauspraegungen(){
 		return merkmalsauspraegungen;
 	}
+
+	@Override
+	public String getName() {
+		return "Notenverteilung";
+	}
+
+
 }

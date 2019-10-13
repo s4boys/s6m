@@ -53,4 +53,10 @@ public class HeizwaermeBau2_2014 implements Datenbasis{
 	public Number[] getMerkmalsauspraegungen(){
 		return merkmalsauspraegungen;
 	}
+
+	@Override
+	public String getName() {
+		return "2014";
+	}
+
 }

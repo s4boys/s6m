@@ -24,4 +24,6 @@ public interface Datenbasis {
 	public String getTopic();
 	
 	public Number[] getMerkmalsauspraegungen();
+
+	public String getName();
 }

@@ -45,6 +45,11 @@ public class ConcatenatedData implements Datenbasis {
 
 		return Stream.concat(m12,Stream.concat(m13, m14)).toArray(Number[]::new);
 	}
+
+	@Override
+	public String getName() {
+		return "2012 - 2014";
+	}
 	
 	private Datenbasis data_2012 = new HeizwaermeBau2_2012();
 	private Datenbasis data_2013 = new HeizwaermeBau2_2013();
