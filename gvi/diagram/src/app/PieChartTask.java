@@ -1,14 +1,11 @@
 package app;
 
-import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import data.*;
-import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
-import javafx.stage.Stage;
 
-public class PieChartTask extends Application{
+public class PieChartTask {
 
 	private ObservableList<PieChart.Data> createPieDataSet(Datenbasis daten) {
 
@@ -23,27 +20,15 @@ public class PieChartTask extends Application{
 
 		return list;
 	}
-	
-	@Override
-	public void start(Stage stage) throws Exception {
-	    Datenbasis data = new ConcatenatedData();
-		
+
+
+	public PieChart GetPieChart(Datenbasis data){
 	    ObservableList<PieChart.Data> pieChartData = createPieDataSet(data);
 	    
     	// Erstellen und Beschriften des Diagramms
        	final PieChart chart = new PieChart(pieChartData);
         chart.setTitle(data.getTopic());
-        
-        // Rendern des Diagramms
-        Scene scene = new Scene(chart,888,666);
-        stage.setTitle("GVI Aufgabe 1: Tortendiagramm");
-        stage.setScene(scene);
-        stage.show();
-		
-	}
 
-	public static void main(String[] args) {
-		launch(args);
+        return chart;
 	}
-	
 }

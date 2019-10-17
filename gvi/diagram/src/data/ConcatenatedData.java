@@ -1,11 +1,7 @@
 package data;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.function.BinaryOperator;
 import java.util.stream.Stream;
-
-import data.*;
 
 public class ConcatenatedData implements Datenbasis {
 
