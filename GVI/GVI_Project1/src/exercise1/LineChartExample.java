@@ -80,7 +80,7 @@ public class LineChartExample extends Application {
 		for (final Series<String, Number> series : lc.getData()) {
 	        for (final Data<String, Number> data : series.getData()) {
 	            Tooltip tooltip = new Tooltip();
-	            tooltip.setText("Heizwert: " + data.getYValue().toString()+ "\nMonat: " + data.getXValue().toString());
+	            tooltip.setText(series.getName()+"\nHeizwert: " + data.getYValue().toString()+ "\nMonat: " + data.getXValue().toString());
 	            Tooltip.install(data.getNode(), tooltip);
 	        }
 	    }

@@ -56,7 +56,7 @@ public class PieChartExample extends Application {
 		// add tooltips to every node
 		for (final PieChart.Data data : pc.getData()) {
 			Tooltip tooltip = new Tooltip();
-			tooltip.setText("Heizwert: " + data.getPieValue() + "\nMonat: " + data.getName().toString());
+			tooltip.setText(data.getName()+"\nHeizwert: " + data.getPieValue() + "\nMonat: " + data.getName().toString());
 			Tooltip.install(data.getNode(), tooltip);
 		}
 
