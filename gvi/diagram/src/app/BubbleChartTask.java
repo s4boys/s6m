@@ -29,7 +29,7 @@ public class BubbleChartTask {
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel(years[0].getNameBeobachtungsraum());
         NumberAxis yAxis = new NumberAxis();
-        yAxis.setLabel(years[0].getName());
+        yAxis.setLabel("Jahre");
         yAxis.setAutoRanging(false);
         yAxis.setTickUnit(1);
         yAxis.setLowerBound(2010);
@@ -38,7 +38,7 @@ public class BubbleChartTask {
         // Erstellen und Beschriften des Diagramms
         final BubbleChart<Number,Number> bubble_chart = new BubbleChart<>(xAxis,yAxis);
 
-        bubble_chart.setTitle(years[0].getTopic());
+        bubble_chart.setTitle(years[0].getTopic() + " und Jahr");
 
         for (Datenbasis year: years){
             bubble_chart.getData().add(createLineSeries(year,Integer.parseInt(year.getName())));

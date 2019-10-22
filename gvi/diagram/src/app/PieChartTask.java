@@ -21,6 +21,16 @@ public class PieChartTask {
 		return list;
 	}
 
+	public PieChart[] GetYearlyPieCharts(Datenbasis[] years){
+		PieChart[] charts = new PieChart[3];
+
+		for (int i = 0; i < charts.length; i++){
+			ObservableList<PieChart.Data> data = createPieDataSet(years[i]);
+			charts[i] = new PieChart(data);
+			charts[i].setTitle(years[i].getName());
+		}
+		return charts;
+	}
 
 	public PieChart GetPieChart(Datenbasis data){
 	    ObservableList<PieChart.Data> pieChartData = createPieDataSet(data);

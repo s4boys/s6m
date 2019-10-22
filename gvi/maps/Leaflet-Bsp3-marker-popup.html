@@ -86,14 +86,14 @@ body {
 
 			let lat = 0;
 			let lon = 0;
-			response_promise.then(function(response){
+			// response_promise.then(function(response){
 				
-				let coordinates = response[0];				
+			// 	let coordinates = response[0];				
 
-				lat = coordinates.lat;
-				lon = coordinates.lon
-				console.log("coordinates: " +lon + " " +  lat);
-			});
+			// 	lat = coordinates.lat;
+			// 	lon = coordinates.lon
+			// 	console.log("coordinates: " +lon + " " +  lat);
+			// });
 			console.log("coordinates 2: " +lon + " " +  lat);
 			return coordinates;
 
@@ -107,7 +107,17 @@ body {
 
 			var encoded = encodeURI([ geocodeUrl, address, geocodeParams ].join(''));
 			console.log("encoded: " + encoded);
-			return $.getJSON(encoded);
+
+			let result = $.ajax({
+				url: encoded,
+				dataType: "json",
+				async: false,
+				success: function(json){
+					console.log("test ajax: " + json);
+				}
+				
+			});
+			return result;
 		}
 
 		function initialize() {

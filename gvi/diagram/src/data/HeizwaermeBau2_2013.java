@@ -46,7 +46,7 @@ public class HeizwaermeBau2_2013 implements Datenbasis{
 	
 
 	public String getTopic() {
-		return "Heizwaermebedarf HFT Stuttgart Bau2 pro Monat";
+		return "Heizwaermebedarf HFT Stuttgart Bau 2 pro Monat";
 	}
 	
 

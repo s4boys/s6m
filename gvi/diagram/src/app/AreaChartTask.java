@@ -19,6 +19,23 @@ public class AreaChartTask{
         return result;
     }
 
+    public StackedAreaChart GetStackingAreaChart(Datenbasis[] years){
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel(years[0].getNameBeobachtungsraum());
+        NumberAxis yAxis = new NumberAxis(0,500,125);
+        yAxis.setLabel(years[0].getNameMerkmalsauspraegung());
+
+        // Erstellen und Beschriften des Diagramms
+        final StackedAreaChart<String,Number> area_chart = new StackedAreaChart<String,Number>(xAxis,yAxis);
+
+        area_chart.setTitle(years[0].getTopic());
+
+        for (Datenbasis year: years){
+            area_chart.getData().add(createLineSeries(year));
+        }
+        return area_chart;
+    }
+
     public AreaChart GetAreaChart(Datenbasis [] years)  {
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel(years[0].getNameBeobachtungsraum());
