@@ -43,9 +43,9 @@
     * 7.11.2018
     *
     * GeoVisualisierung
-    * 
+    *
     * ------------------------------------------------*/
-    var map
+    let map;
     /**
     * Die Methode initialize wird beim Laden der Webseite aufgerufen
     * durch HTML <body onload="initialize()">, siehe unten.
@@ -53,32 +53,32 @@
     function initialize() {
       /**
         * zoom level: 0 - 18
-        * 
+        *
         * 0 - Weltkarte
         *  ...
         * 18 - Einzelgebäue
         *
         * siehe https://leafletjs.com/examples/zoom-levels/
-      * 
+      *
         * setView:
-        * der erste Paramter definiert den Mittelpunkt der Karte in 
+        * der erste Paramter definiert den Mittelpunkt der Karte in
       * Längen- und Breitengrad (Koordinatensystem WGS 84)
         *
       * Stuttgart - [48.81, 9.16]
         * Sidney - [-33.51, 151.12]
         *
       */
-      map = L.map('map_canvas').setView([-33.51, 151.12], 10);
+      map = L.map('map_canvas').setView([48.75, 9.21], 5);
       /**
-      * Die Karte basiert auf OpenStreetmap Daten und wird als gekachelte 
-      * Rasterkarte bereitgestellt. 
-      * Hinweis: In den Beispielen des Leaflet Quickstart Tutorials werden Karten von 
-      * MapBox genutzt. Diese sind auch mit einem 
+      * Die Karte basiert auf OpenStreetmap Daten und wird als gekachelte
+      * Rasterkarte bereitgestellt.
+      * Hinweis: In den Beispielen des Leaflet Quickstart Tutorials werden Karten von
+      * MapBox genutzt. Diese sind auch mit einem
       * Geschäftsmodell verbunden, siehe https://www.mapbox.com/pricing/
       * https://leafletjs.com/examples/quick-start/
       *
       */
-      var osm = new L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      let osm = new L.tileLayer('https://tile.thunderforest.com/spinal-map/{z}/{x}/{y}.png', {
         attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
         minZoom: 2,
         maxZoom: 18

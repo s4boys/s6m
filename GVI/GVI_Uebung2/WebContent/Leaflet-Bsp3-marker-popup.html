@@ -43,7 +43,7 @@
     * 7.11.2018
     *
     * GeoVisualisierung
-    * 
+    *
     * ------------------------------------------------*/
     var map
     /**
@@ -53,15 +53,15 @@
     function initialize() {
       /**
       * zoom level: 0 - 18
-      * 
+      *
       * 0 - Weltkarte
       *  ...
       * 18 - Einzelgebäue
       *
       * siehe https://leafletjs.com/examples/zoom-levels/
-      * 
+      *
       * setView:
-      * der erste Paramter definiert den Mittelpunkt der Karte in 
+      * der erste Paramter definiert den Mittelpunkt der Karte in
       * Längen- und Breitengrad (Koordinatensystem WGS 84)
       *
       * Stuttgart - [48.81, 9.16]
@@ -70,8 +70,8 @@
       */
       map = L.map('map_canvas').setView([-33.51, 151.12], 10);
       /**
-      * Die Karte basiert auf OpenStreetmap Daten und wird von Mapbox als gekachelte 
-      * Rasterkarte bereitgestellt. Leider ist die Nutzung von MapBox auch mit einem 
+      * Die Karte basiert auf OpenStreetmap Daten und wird von Mapbox als gekachelte
+      * Rasterkarte bereitgestellt. Leider ist die Nutzung von MapBox auch mit einem
       * Geschäftsmodell verbunden, siehe https://www.mapbox.com/pricing/
       * Aber bei geringer Nutzung sind die Karten kostenfrei.
       * Als access token wird das token aus dem Leaflet Quickstart verwendet:
@@ -89,7 +89,7 @@
       /**
       * place marker with balloon
       * and user defines Icon
-      *   
+      *
       */
       var beachFlagIcon = L.icon({
         iconUrl: 'images/beachflag.png',

@@ -14,11 +14,11 @@ import javafx.stage.Stage;
 
 public class BubbleChartExample extends Application {
 
-	private static ObservableList<XYChart.Data<Number, Number>> createXYDataSet(Number[] label, Number[] data) {
+	private static ObservableList<XYChart.Data<Number, Number>> createXYDataSet(Number xlabel, Number[] ylabel, Number[] data) {
 		ObservableList<XYChart.Data<Number, Number>> list = FXCollections.observableArrayList();
 
 		for (int i = 0; i < data.length; i++) {
-			list.add(new XYChart.Data<Number, Number>(label[i], data[i]));
+			list.add(new XYChart.Data<Number, Number>(xlabel, ylabel[i], data[i]));
 		}
 		return list;
 	}
@@ -33,6 +33,7 @@ public class BubbleChartExample extends Application {
 	public void start(Stage stage) throws Exception {
 
 		// data
+		Number[] years = { 2012, 2013, 2014};
 		Number[] months = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 		Number[] y2012 = { 128.52, 187.54, 63.16, 72.18, 0, 0, 0, 0, 6, 68.58, 84.54, 120.51 };
 		Number[] y2013 = { 144.44, 133.07, 121.78, 63.86, 35.53, 18.57, 0, 0, 16.56, 48.53, 91.88, 115.2 };
@@ -43,31 +44,31 @@ public class BubbleChartExample extends Application {
 		NumberAxis yAxis = new NumberAxis();
 
 		yAxis.setAutoRanging(false);
-		yAxis.setLowerBound(0);
-		yAxis.setUpperBound(200);
+		yAxis.setLowerBound(2010);
+		yAxis.setUpperBound(2016);
 		yAxis.setTickUnit(1.0);
 		yAxis.setMinorTickVisible(false);
 
 		// create chart
 		final BubbleChart<Number, Number> bc = new BubbleChart<>(xAxis, yAxis);
-		yAxis.setLabel("Heizwärmebedarf");
+		yAxis.setLabel("Jahr");
 		xAxis.setLabel("Monat");
 
 		// add data
 		ObservableList<XYChart.Data<Number, Number>> lineChartData;
-		lineChartData = createXYDataSet(months, y2012);
+		lineChartData = createXYDataSet(years[0], months, y2012);
 
 		XYChart.Series<Number, Number> series1 = new XYChart.Series<>(lineChartData);
 		series1.setName("2012");
 		bc.getData().add(series1);
 
-		lineChartData = createXYDataSet(months, y2013);
+		lineChartData = createXYDataSet(years[1], months, y2013);
 
 		XYChart.Series<Number, Number> series2 = new XYChart.Series<>(lineChartData);
 		series2.setName("2013");
 		bc.getData().add(series2);
 
-		lineChartData = createXYDataSet(months, y2014);
+		lineChartData = createXYDataSet(years[2], months, y2014);
 
 		XYChart.Series<Number, Number> series3 = new XYChart.Series<>(lineChartData);
 		series3.setName("2014");
