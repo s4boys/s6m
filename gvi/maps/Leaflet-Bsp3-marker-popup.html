@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Leaflet</title>
+<link rel="stylesheet"
+	href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+	integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+	crossorigin="" />
+<style>
+html, body {
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	padding: 0;
+	margin: 0;
+}
+
+#map_canvas {
+	width: 100%;
+	height: 100%;
+}
+</style>
+</head>
+
+<body onload="initialize()">
+	<div id="map_canvas"></div>
+	<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+		integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+		crossorigin=""></script>
+	<script>
+		/*---------------------------------------------------
+		 * Hochschule für Technik Stuttgart
+		 * Fachbereich Vermessung, Informatik und Mathematik
+		 * Schellingstr. 24
+		 * D-70174 Stuttgart
+		 *
+		 * Volker Coors
+		 * 7.11.2018
+		 *
+		 * GeoVisualisierung
+		 * 
+		 * ------------------------------------------------*/
+		var map
+
+		function csvJSON(csv) {
+
+			var lines = csv.split("\rn");
+
+			var result = [];
+
+			var headers = lines[0].split(";");
+
+			for (var i = 1; i < lines.length; i++) {
+
+				var obj = {};
+				var currentline = lines[i].split(";");
+
+				console.log(currentline);
+
+				for (var j = 0; j < headers.length; j++) {
+					obj[headers[j]] = currentline[j];
+				}
+
+				result.push(obj);
+
+			}
+
+			//return result; //JavaScript object
+			return JSON.stringify(result); //JSON
+		}
+
+		function splitString(line) {
+			let result = line.split(";"); 
+			return result;
+		}
+
+		function geocode_handler(address){
+			let response_promise = geocode(address);
+
+			console.log("response promise: " + response_promise);
+
+			let lat = 0;
+			let lon = 0;
+			response_promise.then(function(response){
+				
+				let coordinates = response[0];				
+
+				lat = coordinates.lat;
+				lon = coordinates.lon
+				console.log("coordinates: " +lon + " " +  lat);
+			});
+			console.log("coordinates 2: " +lon + " " +  lat);
+			return coordinates;
+
+		}
+
+		function geocode(address) {
+		    const geocodeUrl = 'https://nominatim.openstreetmap.org/search?q=';
+		    const geocodeParams = '&format=json&limit=1';
+
+			console.log("address: " + address);
+
+			var encoded = encodeURI([ geocodeUrl, address, geocodeParams ].join(''));
+			console.log("encoded: " + encoded);
+			return $.getJSON(encoded);
+		}
+
+		function initialize() {
+
+			map = L.map('map_canvas').setView([ -33.51, 151.12 ], 10);
+
+			var osm = new L.tileLayer(
+					'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+					{
+						attribution : 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+						minZoom : 2,
+						maxZoom : 18
+					});
+			map.addLayer(osm);
+
+			data = [
+					"BPS;WS0708;SAP-Prozesse Logistik;Bosch GmbH;Franz-Oechsle-Straße 4, 73207 Plochingen",
+					"BPS;WS0708;SAP-Projekte;Bosch GmbH;Wernerstraße 51, 70469 Stuttgart-Feuerbach",
+					"BPS;WS0708;;Institut Cartogràfic de Catalunya;Parc de Montjuic, 08038 Barcelona, Spanien" ]
+
+			let description = "test description"
+			
+			for (let single_data of data) {
+				console.log(data);
+				cells = splitString(single_data);
+				let icon_url = "";
+				if (cells[0] == "BPS") {
+					icon_url = "images/bps.png";
+				} else if (cells[0] == "BT") {
+					icon_url = "images/ba.png";
+				}
+				let current_icon = L.icon({
+					iconUrl : icon_url,
+					iconSize : [ 20, 32 ], // size of the icon
+					iconAnchor : [ 0, 32 ], // point of the icon which will correspond to marker's location
+					popupAnchor : [ 0, -32 ]
+				});
+
+				let coordinates = geocode_handler(cells[4]);
+				description = cells[2]
+
+				var marker = L.marker([ coordinates.lat, coordinates.lon ], {
+					icon : current_icon,
+					title : cells[1]
+				}).addTo(map).bindPopup("<b>" + description + "</b>").openPopup();
+			}
+
+		}
+	</script>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+		crossorigin="anonymous">
+		
+	</script>
+</body>
+
+</html>
