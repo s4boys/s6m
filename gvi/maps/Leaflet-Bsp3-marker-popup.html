@@ -79,46 +79,65 @@ body {
 			return result;
 		}
 
-		function geocode_handler(address){
-			let response_promise = geocode(address);
+		function addAllMarker(data){
+			for (let single_data of data) {
+				console.log(single_data);
+				cells = splitString(single_data);
+				let type = cells[0];
+				// let year = cells[1]
+				let description = cells[2];
+				let company = cells[3];
+				let address = cells[4];
 
-			console.log("response promise: " + response_promise);
+				console.log("description: " +description);
+				if(!description){
+					continue;
+				}
 
-			let lat = 0;
-			let lon = 0;
-			// response_promise.then(function(response){
-				
-			// 	let coordinates = response[0];				
-
-			// 	lat = coordinates.lat;
-			// 	lon = coordinates.lon
-			// 	console.log("coordinates: " +lon + " " +  lat);
-			// });
-			console.log("coordinates 2: " +lon + " " +  lat);
-			return coordinates;
-
+				let icon_url = "";
+				// e): GetIcon(type,year) takes different images
+				if (type == "BPS") {
+					icon_url = "images/bps.png";
+				} else if (type == "BT") {
+					icon_url = "images/ba.png";
+				}
+				let current_icon = L.icon({
+					iconUrl : icon_url,
+					iconSize : [ 20, 32 ], // size of the icon
+					iconAnchor : [ 0, 32 ], // point of the icon which will correspond to marker's location
+					popupAnchor : [ 0, -32 ]
+				});
+				addMarker(description,company,address,current_icon);
+			}
 		}
 
-		function geocode(address) {
+		function addMarker(description,company,address,current_icon){
 		    const geocodeUrl = 'https://nominatim.openstreetmap.org/search?q=';
 		    const geocodeParams = '&format=json&limit=1';
 
-			console.log("address: " + address);
-
 			var encoded = encodeURI([ geocodeUrl, address, geocodeParams ].join(''));
-			console.log("encoded: " + encoded);
 
-			let result = $.ajax({
-				url: encoded,
-				dataType: "json",
-				async: false,
-				success: function(json){
-					console.log("test ajax: " + json);
-				}
-				
-			});
-			return result;
+			let api_result = $.getJSON(encoded);
+			console.log("url: " + encoded);
+
+			api_result.then(function(response){		
+				if(jQuery.isEmptyObject(response)){
+					return;
+				}		
+				let coordinates = response[0];
+				lat = coordinates.lat;
+				lon = coordinates.lon
+
+				var marker = L.marker([ lat, lon ], {
+					icon : current_icon,
+					title : company
+				}).addTo(map).bindPopup("<b>" + company + ": " + description + "</b>").openPopup();	
+			});			
 		}
+
+		// f function that listens to a button to draw necessary flags only?
+
+		// g get zoom level from osm variable? aggregate to street > city > country
 
 		function initialize() {
 
@@ -133,37 +152,100 @@ body {
 					});
 			map.addLayer(osm);
 
-			data = [
-					"BPS;WS0708;SAP-Prozesse Logistik;Bosch GmbH;Franz-Oechsle-Straße 4, 73207 Plochingen",
-					"BPS;WS0708;SAP-Projekte;Bosch GmbH;Wernerstraße 51, 70469 Stuttgart-Feuerbach",
-					"BPS;WS0708;;Institut Cartogràfic de Catalunya;Parc de Montjuic, 08038 Barcelona, Spanien" ]
+			let data = [
+			"BT;WS0910;Die Lieferantennummerlogik bei Mercedes Benz PKW - Die Auswirkungen des derzeitigen Prozesses auf das Anlaufmanagement und bereichs�bergreifende Optimierungspotentiale;Daimler AG;T�binger Allee 2, 71065 Sindelfingen;;;;;",
+			"BPS;WS0708;SAP-Projekte;Bosch GmbH;Wernerstra�e 51, 70469 Stuttgart-Feuerbach;;;;;",
+			"BPS;WS0708;SAP-Prozesse Logistik;Bosch GmbH;Franz-Oechsle-Stra�e 4, 73207 Plochingen;;;;;",
+			"BPS;WS0708;;Institut Cartogr�fic de Catalunya;Parc de Montjuic, 08038 Barcelona, Spanien;;;;;",
+			"BPS;WS0708;SAP HR;Datenzentrale BW;Krailenhaldenstr. 44, 70469 Stuttgart-Feuerbach;;;;;",
+			"BPS;WS0708;Projektabwicklung und SAP ;Bosch Thermotechnik GmbH;Sophienstrasse 30-32, 35576 Wetzlar;;;;;",
+			"BPS;WS0708;Knowledge Management incl. Workflows;T-Systems International GmbH;Fasanenweg 5, 70771 Leinfelden-Echterdingen;;;;;",
+			"BPS;WS0708;Warenfluss in der Marktbelieferung ;Kaufland Dienstleistung GmbH & Co. Kg;R�telstra�e 35, 74172 Neckarsulm;;;;;",
+			"BPS;WS0708;Anwendungssoftware in Logistik ;AEB-Ges. � Brachensoftware mbH ;Julius-H�lder-Str. 39, 70597 Stuttgart;;;;;",
+			"BPS;WS0708;;M-Way solutions GmbH ;Leitzstr. 45, 70469 Stuttgart;;;;;",
+			"BPS;WS0708;Logistikoptimierung, SCM Optimierung ;CAS;Wilhelm-Schickard-Str. 8-12, 76131 Karlsruhe;;;;;",
+			"BPS;WS0708;Multim. Inhalte von Navigationsger�ten, Pmanagement ;Falk Marco Polo interactive GmbH ;Marco-Polo-Str. 1, 73760 Ostfildern ;;;;;",
+			"BPS;WS0708;Markt- Wettbewerbsanalyse ;Fracht australia Pty Limited ;42 Concorde Drive, Keilor Park, VIC 3042, Melbourne, Australien;;;;;",
+			"BT;WS0809;Echtzeitortung mit Hilfe eines aktiven RFIDSystems am Beispiel der automatischen Steuerung einer Modelleisenbahn;HftT Stuttgart;Stuttgart;;;;;",
+			"BT;WS0809;New Generation Mobile Programming Platform Study Case: Mobile driver assistant for transport on-demand;Institut Cartogr�fic de Catalunya;Parc de Montjuic, 08038 Barcelona, Spanien;;;;;",
+			"BT;WS0809;Aufbereitung von Shuttle Radar Topography Mission Daten f�r die Nutzung als weltweites digitales Gel�ndemodell - Implementierung und Webservices;Geofabrik GmbH;Scheffelstra�e 17a, 76135 Karlsruhe;;;;;",
+			"BT;WS0809;Migration von Projektdaten in ein browserbasiertes Dokumentenmanagementsystems;;;;;;;",
+			"BT;WS0809;Gesch�ftsprozessoptimierung im Wissensmanagement - Modellierung und Optimierung eines Community-Prozesses;T-Systems International GmbH;Fasanenweg 5, 70771 Leinfelden-Echterdingen;;;;;",
+			"BT;WS0809;Entwicklung von artikelbezogenen Dispositions- und Lieferkonzepten;Kaufland Dienstleistung GmbH & Co. Kg;R�telstra�e 35, 74172 Neckarsulm;;;;;",
+			"BT;WS0809;Aufbau einer prozessorientierten Knowledge Management Infrastruktur im IT-Beratungsumfeld;Daimler TSS GmbH;Wilhelm-Runge-Stra�e 11, 89081 Ulm;;;;;",
+			"BT;WS0809;Regelbasiertes Informationsmanagement f�r kontextsensitives und situationsabh�ngiges Verhalten in mobilen Assistenzsystemen;HFT Stuttgart;Stuttgart;;;;;",
+			"BT;WS0809;Konzeption eines Editors f�r die flexible Verwaltung von Metadatenmodellen am Beispiel eines Produktinformationsmanagement-Systems;Heiler Sofware AG;Mittlerer Pfad 5, 70499 Stuttgart;;;;;",
+			"BT;WS0809;Erstellung eines Konzepts f�r Last- und Performancetests f�r das System der Daimler Fleetboard GmbH;Daimler Fleetboard GmbH;Am Wallgraben 125, 70567 Stuttgart;;;;;",
+			"BPS;WS0809;Business Line Technology, Softwareentwicklung, 3rd Level Support, Unterst�tzung beim Application Management;Mieschke Hofmann und Partner GmbH;Schloss Heutingsheim, Schlossstr. 12 71691 Freiberg am Neckar;;;;;",
+			"BPS;WS0809;Entwicklung von Anwendungssoftware, kundenspezifisch angepasste Plattform, PPT;Vector Informatik GmbH;Ingersheimer Str. 24 70499 Stuttgart;;;;;",
+			"BPS;WS0809;Sensorik von Pr�fger�ten, Einf�hrung Pr�f- und Updatesystem f�r Porsche-Fhzg, FAC;Porsche AG;Porscheplatz 1, 70435 Stuttgart-Zuffenhausen;;;;;",
+			"BPS;WS0809;Services Procurement, Umgang mit Systemen und Prozessen eines optimierenden Einkaufs, Einkaufbestellsystem SAP, IBM Einkaufsprozesse;IBM;Pascalstra�e 100, 70569 Stuttgart;;;;;",
+			"BPS;WS0809;Lieferantenmanagement, Analyseprozesse, Aris-Prozessabbildung und Verbesserung, Qualit�tsanalyse Kaufteilprodukte;Daimler AG;Hans-Martin-Schleyer-Str. 21-57, 68305 Mannheim;;;;;",
+			"BPS;WS0809;Lieferantenmanagement, Qualit�t Logistik;Daimler AG;Mercedesstra�e 1, 76437 Rastatt, Gaggenau, Werksteil Rastatt;;;;;",
+			"BPS;WS0809;Beschaffungsprozessplanung, Integration von Lieferanten, Planung der Materialfl�sse, Effizienzcontrolling;Daimler AG;T�binger Allee 2, 71065 Sindelfingen;;;;;",
+			"BPS;WS0809;Logistik und Produktionsoptimierung, Verbrauchsteuerung, Kanban, Standardisierung, Visualisierung, Optimierung des Betriebsflusses;Bosch GmbH;T�binger Str. 123, 72762 Reutlingen;;;;;",
+			"BPS;WS0809;Prozessoptimierung bei AA-DG, Produktentstehungsprozesse, Abteilungsintranetseiten;Bosch GmbH;Franz-Oechsle-Stra�e 4, 73207 Plochingen;;;;;",
+			"BPS;WS0809;Auto+MI, Supply Chain Management, Prozessablaufmanagement, SAP, Controlling;T-Systems International GmbH;Fasanenweg 5, 70771 Leinfelden-Echterdingen;;;;;",
+			"BPS;WS0809;Unterst�tzung der Service Manager, Prozessoptimierung und -definition, Ver�nderungsprozess Diagnostics, Kundenzufriedenheitsstudien;Bosch GmbH;Franz-Oechsle-Stra�e 4, 73207 Plochingen;;;;;",
+			"BPS;WS0809;Einf�hrung GIS-System, Optimierung und Modellierung der Prozesse, performanceoptimierte Systemarchitektur f�r raumbegogene Daten, Realisierung von Konfliktsteuerung;EnBW;Kriegsbergstr. 32,  70174 Stuttgart;;;;;",
+			"BPS;WS0809;Entwicklung von Anwendungssoftware, Unterst�tzung beim System- und Lizenz-Management SAP;Bosch GmbH;Wernerstra�e 51, 70469 Stuttgart-Feuerbach;;;;;",
+			"BPS;WS0809;RFID Technology, RFID und Softwareentwicklung;IBM Stuttgart;Pascalstra�e 100, 70569 Stuttgart;;;;;",
+			"BPS;WS0809;Manager Purchasing;Logistics Group International;Hewlett-Packard-Stra�e 2, 71034 B�blingen;;;;;",
+			"BPS;WS0809;Adressoptimierung in Lotus Notes, Optimierung von Adressverteilungssystem, Prozessoptimierung;Dachser GmbH;Memminger Stra�e 140, 87439 Kempten;;;;;",
+			"BPS;WS0809;Service-Support, Prozessoptimierung, Logistikcontrolling, Bestandsoptimierung;Bosch Verpackungstechnik GmbH;Alte Bundesstra�e 50, 71332 Waiblingen;;;;;",
+			"BPS;WS0809;Einf�hrung SAP-System, Unterst�tzung Projektleitung, Prozessabstimmung, Datenmigration, Dokumentation;Bosch Engineering GmbH;Robert-Bosch-Allee 1, 74232 Abstatt;;;;;",
+			"BPS;WS0809;Reifegrad- und Anlaufmanagement, Logistik, Modellierung zuk�nftiger logistischer Prozesse, Entwicklung logischer Methoden f�r den Serienanlauf neuer Fahrzeugbaureihen;Daimler AG;T�binger Allee 2, 71065 Sindelfingen;;;;;",
+			"BPS;WS0809;Beschaffungslogistik, SAP, Termin�berwachung, Lieferantenbetreuung;Bosch Thermotechnik GmbH;Junkerstra�e 20, 73249 Wernau;;;;;",
+			"BT;WS0910;Analyse und Konzeption von Gesch�ftsprozessen am Beispiel einer Marktgebietskooperation im liberalisierten Erdgasmarkt Deutschland;Gasversorgung S�ddeutschland GmbH;Am Wallgraben 135, 70565 Stuttgart;;;;;",
+			"BT;WS0910;Studie zur Anwendung von Service Level Management (SLM) Prozessen im SAP Competence Centre der Heidelberg Cement AG;HeidelbergCement AG;Berliner Stra�e 6, 69120 Heidelberg;;;;;",
+			"BT;WS0910;Realisierung eines serviceorientierten Unternehmensprozesses;Fraunhofer;Nobelstr. 12, 70569 Stuttgart;;;;;",
+			"BT;WS0910;Entwicklung einer verursachergerechten Kostenverrechnung in der Logistik auf Basis eines Qualit�tsmanagementsystems (am Beispiel Bosch Thermotechnik GmbH);Bosch Thermotechnik GmbH;Junkerstra�e 20, 73249 Wernau;;;;;",
+			"BT;WS0910;Analyse der Wissensbildung in der Fahrzeugdiagnose und Konzeption eines prozessorientierten Wissensmanagements;Gigatronik GmbH;Hortensienweg 21, 70374 Stuttgart;;;;;",
+			"BT;WS0910;Der Aspekt Testmanagement und Testtools im CMMI � Komplex Verifikation am Beispiel der Daimler SCM � Projektes SMB;T-Systems International GmbH;Fasanenweg 5, 70771 Leinfelden-Echterdingen;;;;;",
+			"BT;WS0910;Implementierung einer workflowgest�tzten Testspezifikation im Projekt AnTeAs;Gigatronik GmbH;Hortensienweg 21, 70374 Stuttgart;;;;;",
+			"BT;WS0910;Implementierung einer Systemarchitektur zur workflowgest�tzten Testausf�hrung im Projekt AnTeAs;Gigatronik GmbH;Hortensienweg 21, 70374 Stuttgart;;;;;",
+			"BT;WS0910;Konzeption eines eCommerce-Systems im Bereich Diagnostic-Services zur Erweiterung der Kundenorientierung und des Dienstleistungsportfolio.;Bosch GmbH;Franz-Oechsle-Stra�e 4, 73207 Plochingen;;;;;",
+			"BT;WS0910;Erarbeitung und Anwendung eines Plugin-Konzepts f�r FleetBoard WebStart-Clients;Daimler Fleetboard GmbH;Am Wallgraben 125, 70567 Stuttgart;;;;;",
+			"BT;WS0910;Einsatz des Knowledge Discovery zur Analyse und Optimierung von Kalibrierdaten aus dem Automotive Umfeld;Vector Informatik GmbH;Ingersheimer Str. 24 70499 Stuttgart;;;;;",
+			"BT;WS0910;Analyse und Evaluierung von Softwarel�sungen zur Vermeidung von False Positiv Reads an RFID Portalen;IBM Deutschland GmbH;Pascalstra�e 100, 70569 Stuttgart;;;;;",
+			"BT;SS10;Verbesserung des globalen Wissensaustausches durch Social Software-Auswirkungen auf den internationalen Vertriebsprozess der Festo AG & Co. KG;Festo AG & Co. KG;Ruiter Stra�e 82, 73734 Esslingen-Berkheim;;;;;",
+			"BT;SS10;Entwicklung eines informatorischen Konzeptes zur Optimierung des kleinladungstr�ger-Belieferungsprozesses im Einsatz der Montech-F�rdertechnik;Daimler AG;Epplestrasse 227, 70567 Stuttgart;;;;;",
+			"BT;SS10;Verzahnung von Montage- und Logistikplanungsprozessen in der fr�hen Phase innerhalb der Digitalen Fabrik;Daimler AG;T�binger Allee 2, 71065 Sindelfingen;;;;;",
+			"BT;;Echtzeitortung mit Hilfe eines aktiven RFIDSystems am Beispiel der automatischen Steuerung einer Modelleisenbahn;HftT Stuttgart;Stuttgart;;;;;",
+			"BT;;New Generation Mobile Programming Platform Study Case: Mobile driver assistant for transport on-demand;Institut Cartogr�fic de Catalunya;Parc de Montjuic, 08038 Barcelona, Spanien;;;;;",
+			"BT;;Aufbereitung von Shuttle Radar Topography Mission Daten f�r die Nutzung als weltweites digitales Gel�ndemodell - Implementierung und Webservices;Geofabrik GmbH;Scheffelstra�e 17a, 76135 Karlsruhe;;;;;",
+			"BT;;Migration von Projektdaten in ein browserbasiertes Dokumentenmanagementsystems;;;;;;;",
+			"BT;;Gesch�ftsprozessoptimierung im Wissensmanagement - Modellierung und Optimierung eines Community-Prozesses;T-Systems International GmbH;Fasanenweg 5, 70771 Leinfelden-Echterdingen;;;;;",
+			"BT;;Entwicklung von artikelbezogenen Dispositions- und Lieferkonzepten;Kaufland Dienstleistung GmbH & Co. Kg;R�telstra�e 35, 74172 Neckarsulm;;;;;",
+			"BT;;Aufbau einer prozessorientierten Knowledge Management Infrastruktur im IT-Beratungsumfeld;Daimler TSS GmbH;Wilhelm-Runge-Stra�e 11, 89081 Ulm;;;;;",
+			"BT;;Regelbasiertes Informationsmanagement f�r kontextsensitives und situationsabh�ngiges Verhalten in mobilen Assistenzsystemen;HFT Stuttgart;Stuttgart;;;;;",
+			"BT;;Konzeption eines Editors f�r die flexible Verwaltung von Metadatenmodellen am Beispiel eines Produktinformationsmanagement-Systems;Heiler Sofware AG;Mittlerer Pfad 5, 70499 Stuttgart;;;;;",
+			"BT;;Erstellung eines Konzepts f�r Last- und Performancetests f�r das System der Daimler Fleetboard GmbH;Daimler Fleetboard GmbH;Am Wallgraben 125, 70567 Stuttgart;;;;;",
+			"BT;;Analyse und Konzeption von Gesch�ftsprozessen am Beispiel einer Marktgebietskooperation im liberalisierten Erdgasmarkt Deutschland;Gasversorgung S�ddeutschland GmbH;Am Wallgraben 135, 70565 Stuttgart;;;;;",
+			"BT;;Studie zur Anwendung von Service Level Management (SLM) Prozessen im SAP Competence Centre der Heidelberg Cement AG;HeidelbergCement AG;Berliner Stra�e 6, 69120 Heidelberg;;;;;",
+			"BT;;Die Lieferantennummerlogik bei Mercedes Benz PKW - Die Auswirkungen des derzeitigen Prozesses auf das Anlaufmanagement und bereichs�bergreifende Optimierungspotentiale;Daimler AG;T�binger Allee 2, 71065 Sindelfingen;;;;;",
+			"BT;;Realisierung eines serviceorientierten Unternehmensprozesses;Fraunhofer;Nobelstr. 12, 70569 Stuttgart;;;;;",
+			"BT;;Entwicklung einer verursachergerechten Kostenverrechnung in der Logistik auf Basis eines Qualit�tsmanagementsystems (am Beispiel Bosch Thermotechnik GmbH);Bosch Thermotechnik GmbH;Junkerstra�e 20, 73249 Wernau;;;;;",
+			"BT;;Analyse der Wissensbildung in der Fahrzeugdiagnose und Konzeption eines prozessorientierten Wissensmanagements;Gigatronik GmbH;Hortensienweg 21, 70374 Stuttgart;;;;;",
+			"BT;;Der Aspekt Testmanagement und Testtools im CMMI � Komplex Verifikation am Beispiel der Daimler SCM � Projektes SMB;T-Systems International GmbH;Fasanenweg 5, 70771 Leinfelden-Echterdingen;;;;;",
+			"BT;;Implementierung einer workflowgest�tzten Testspezifikation im Projekt AnTeAs;Gigatronik GmbH;Hortensienweg 21, 70374 Stuttgart;;;;;",
+			"BT;;Implementierung einer Systemarchitektur zur workflowgest�tzten Testausf�hrung im Projekt AnTeAs;Gigatronik GmbH;Hortensienweg 21, 70374 Stuttgart;;;;;",
+			"BT;;Konzeption eines eCommerce-Systems im Bereich Diagnostic-Services zur Erweiterung der Kundenorientierung und des Dienstleistungsportfolio.;Bosch GmbH;Franz-Oechsle-Stra�e 4, 73207 Plochingen;;;;;",
+			"BT;;Erarbeitung und Anwendung eines Plugin-Konzepts f�r FleetBoard WebStart-Clients;Daimler Fleetboard GmbH;Am Wallgraben 125, 70567 Stuttgart;;;;;",
+			"BT;;Einsatz des Knowledge Discovery zur Analyse und Optimierung von Kalibrierdaten aus dem Automotive Umfeld;Vector Informatik GmbH;Ingersheimer Str. 24 70499 Stuttgart;;;;;",
+			"BT;;Analyse und Evaluierung von Softwarel�sungen zur Vermeidung von False Positiv Reads an RFID Portalen;IBM Deutschland GmbH;Pascalstra�e 100, 70569 Stuttgart;;;;;"
+			];
 
-			let description = "test description"
-			
-			for (let single_data of data) {
-				console.log(data);
-				cells = splitString(single_data);
-				let icon_url = "";
-				if (cells[0] == "BPS") {
-					icon_url = "images/bps.png";
-				} else if (cells[0] == "BT") {
-					icon_url = "images/ba.png";
-				}
-				let current_icon = L.icon({
-					iconUrl : icon_url,
-					iconSize : [ 20, 32 ], // size of the icon
-					iconAnchor : [ 0, 32 ], // point of the icon which will correspond to marker's location
-					popupAnchor : [ 0, -32 ]
-				});
+			addAllMarker(data);
+			// $.ajax({
+			// 	url: "bps_addresses_cut.CSV",
+			// 	success: function(data){
+			// 		let project_list = csvJSON(data);
+			// 		console.log(project_list);
+			// 	}
+			// });
 
-				let coordinates = geocode_handler(cells[4]);
-				description = cells[2]
 
-				var marker = L.marker([ coordinates.lat, coordinates.lon ], {
-					icon : current_icon,
-					title : cells[1]
-				}).addTo(map).bindPopup("<b>" + description + "</b>").openPopup();
-			}
 
 		}
 	</script>
