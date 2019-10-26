@@ -6,15 +6,16 @@ import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 
 public class PieChartExample extends Application {
 
-	private static ObservableList<PieChart.Data> createPieDataSet(String[] label, Number[] data, int year) {
+	private static ObservableList<PieChart.Data> createPieDataSet(String[] label, Number[] data) {
 		ObservableList<PieChart.Data> list = FXCollections.observableArrayList();
 
 		for (int i = 0; i < data.length; i++) {
-			list.add(new PieChart.Data(label[i] + ", " + year, data[i].doubleValue()));
+			list.add(new PieChart.Data(label[i], data[i].doubleValue()));
 		}
 		return list;
 	}
@@ -37,13 +38,13 @@ public class PieChartExample extends Application {
 
 		// add data
 		ObservableList<PieChart.Data> pieChartData2012;
-		pieChartData2012 = createPieDataSet(months, y2012, 2012);
+		pieChartData2012 = createPieDataSet(months, y2012);
 
 		ObservableList<PieChart.Data> pieChartData2013;
-		pieChartData2013 = createPieDataSet(months, y2013, 2013);
+		pieChartData2013 = createPieDataSet(months, y2013);
 
 		ObservableList<PieChart.Data> pieChartData2014;
-		pieChartData2014 = createPieDataSet(months, y2014, 2014);
+		pieChartData2014 = createPieDataSet(months, y2014);
 
 		ObservableList<PieChart.Data> completeData = FXCollections.observableArrayList();
 		completeData.addAll(pieChartData2012);
@@ -51,17 +52,38 @@ public class PieChartExample extends Application {
 		completeData.addAll(pieChartData2014);
 
 		// create chart
-		final PieChart pc = new PieChart(completeData);
+		final PieChart pc1 = new PieChart(pieChartData2012);
+		pc1.setTitle("2012");
+		final PieChart pc2 = new PieChart(pieChartData2013);
+		pc2.setTitle("2013");
+		final PieChart pc3 = new PieChart(pieChartData2014);
+		pc3.setTitle("2014");
 		
+		FlowPane root = new FlowPane();
+		root.getChildren().addAll(pc1, pc2, pc3);
+
 		// add tooltips to every node
-		for (final PieChart.Data data : pc.getData()) {
+
+		for (final PieChart.Data data : pc1.getData()) {
+			Tooltip tooltip = new Tooltip();
+			tooltip.setText(data.getName()+"\nHeizwert: " + data.getPieValue() + "\nMonat: " + data.getName().toString());
+			Tooltip.install(data.getNode(), tooltip);
+		}
+		for (final PieChart.Data data : pc2.getData()) {
+			Tooltip tooltip = new Tooltip();
+			tooltip.setText(data.getName()+"\nHeizwert: " + data.getPieValue() + "\nMonat: " + data.getName().toString());
+			Tooltip.install(data.getNode(), tooltip);
+		}
+		for (final PieChart.Data data : pc3.getData()) {
 			Tooltip tooltip = new Tooltip();
 			tooltip.setText(data.getName()+"\nHeizwert: " + data.getPieValue() + "\nMonat: " + data.getName().toString());
 			Tooltip.install(data.getNode(), tooltip);
 		}
 
+
+		    
 		// render diagram
-		Scene scene = new Scene(pc, 1000, 800);
+		Scene scene = new Scene(root, 1000, 800);
 		stage.setTitle("Heiwärmebedarf: HFT Bau 2");
 		stage.setScene(scene);
 		stage.show();
