@@ -1,0 +1,8 @@
+DELIMITER_SC = ";"
+DELIMITER_WS = " "
+LINE_FEED ="\n"
+SPAMBASE="@relation spambase"
+ATTRIBUTE_WORD_FREQ = "@attribute word_freq_"
+ATTRIBUTE_SUFFIX = " REAL"
+ATTRIBUTE_CLASS = "@attribute class {0,1}"
+DATA = "@data"
