@@ -7,7 +7,7 @@ def read_email(path):
 
 
 def main():
-    input = read_email("short_enron2.csv")
+    input = read_email("enron.csv")
     parser = EmailParser.EmailParser()
     parser.parse_emails(input)
 

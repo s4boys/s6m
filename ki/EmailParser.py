@@ -4,10 +4,12 @@ class EmailParser:
 
     def split_email(self,line, delimiter):
         email = line.split(delimiter)
+        content = ""
+        for text in email[1:-2]:
+            content += text.replace("\"","")
         dict = {
-            "subject": email[1],
-            "text": email[2],
-            "ham": email[3]
+            "content": content,
+            "ham": email[-1]
         }
         return dict
 
@@ -24,7 +26,7 @@ class EmailParser:
  #       data = list()
 
     def get_data(self,email,relative_occurences):
-        words = email["text"].split(Keywords.DELIMITER_WS)
+        words = email["content"].split(Keywords.DELIMITER_WS)
         for word in words:
             relative_occurences[word] = True
 
@@ -41,10 +43,10 @@ class EmailParser:
     def get_attributes(self, occurences):
         result =""
         for word in occurences:
-            if (word == "%"):
-                result += Keywords.ATTRIBUTE_WORD_FREQ + "percentage" + Keywords.ATTRIBUTE_SUFFIX + Keywords.LINE_FEED
+            if (word == "\\"):
+                result += Keywords.ATTRIBUTE + " \"" + Keywords.WORD_FREQ + "\\\\" + "\"" + Keywords.ATTRIBUTE_SUFFIX + Keywords.LINE_FEED
             else:
-                result += Keywords.ATTRIBUTE_WORD_FREQ + word + Keywords.ATTRIBUTE_SUFFIX + Keywords.LINE_FEED
+                result += Keywords.ATTRIBUTE + " \"" + Keywords.WORD_FREQ + word + "\"" + Keywords.ATTRIBUTE_SUFFIX + Keywords.LINE_FEED
         return result
 
     def get_spambase_file(self,path):
@@ -67,7 +69,7 @@ class EmailParser:
         for line in csv_file:
             email = self.split_email(line, Keywords.DELIMITER_SC)
             emails.append(email)
-            self.count_words(email["text"],absolute_occurences)
+            self.count_words(email["content"],absolute_occurences)
         ## dict order can change therefore 2 loops
         arff_file = self.get_spambase_file(output_path)
         arff_file.write(self.get_attributes(absolute_occurences))
