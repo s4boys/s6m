@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
@@ -46,12 +47,12 @@ public class AreaChartExample extends Application {
 
 		yAxis.setAutoRanging(false);
 		yAxis.setLowerBound(0);
-		yAxis.setUpperBound(200);
-		yAxis.setTickUnit(1.0);
+		yAxis.setUpperBound(500);
+		yAxis.setTickUnit(125);
 		yAxis.setMinorTickVisible(false);
 
 		// create chart
-		final AreaChart<String, Number> ac = new AreaChart<>(xAxis, yAxis);
+		final StackedAreaChart<String, Number> ac = new StackedAreaChart<>(xAxis, yAxis);
 		yAxis.setLabel("Heizwärmebedarf");
 		xAxis.setLabel("Monat");
 

@@ -47,7 +47,7 @@ public class ScatterPlotExample extends Application {
 		yAxis.setAutoRanging(false);
 		yAxis.setLowerBound(0);
 		yAxis.setUpperBound(200);
-		yAxis.setTickUnit(1.0);
+		yAxis.setTickUnit(10.0);
 		yAxis.setMinorTickVisible(false);
 
 		// create chart
