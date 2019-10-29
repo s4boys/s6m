@@ -7,9 +7,12 @@ def read_email(path):
 
 
 def main():
-    input = read_email("enron.csv")
+    output_path = "spam.arff"
+    input = read_email("short_enron4.csv")
     parser = EmailParser.EmailParser()
     parser.parse_emails(input)
+    #parser.filter_attributes_by_occurrence(5)
+    parser.write_arff_file(output_path)
 
 
 if __name__ == "__main__":

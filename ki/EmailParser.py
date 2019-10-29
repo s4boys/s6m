@@ -1,52 +1,63 @@
 import Keywords
+import Email
+
 
 class EmailParser:
 
-    def split_email(self,line, delimiter):
-        email = line.split(delimiter)
-        content = ""
-        for text in email[1:-2]:
-            content += text.replace("\"","")
-        dict = {
-            "content": content,
-            "ham": email[-1]
-        }
-        return dict
+    def __init__(self):
+        self.all_words = dict()
+        self.emails = list()
 
-    def count_words(self,text, occurences):
-        index = 0
-        words = text.split(Keywords.DELIMITER_WS)
-        for word in words:
-            if word in occurences:
-                occurences[word] += 1
-            else:
-                occurences[word] = 1
+    def count_words_in_all_emails(self):
+        for email in self.emails:
+            for word in email.word_occurrences:
+                if word in self.all_words:
+                    self.all_words[word] += 1
+                else:
+                    self.all_words[word] = 0
 
-#    def to_arff_format(self, ):
- #       data = list()
+    # changes order of dict, attention!
+    def filter_attributes_by_occurrence(self,relevant_amount):
+        for word in list(self.all_words):
+            if (self.all_words[word] < relevant_amount):
+                self.all_words.pop(word,None)
 
-    def get_data(self,email,relative_occurences):
-        words = email["content"].split(Keywords.DELIMITER_WS)
-        for word in words:
-            relative_occurences[word] = True
-
+    def get_data(self,email):
         data_line = ""
-        #print(relative_occurences)
-        for o in relative_occurences:
-            if (relative_occurences[o]):
-                data_line += "1,"
-            else:
-                data_line += "0,"
-        data_line += email["ham"]
+        for word in email.word_occurrences:
+            if (word in self.all_words):
+                self.all_words[word] = email.word_occurrences[word]
+            #else:
+                #print("Could not find " + word + " in all words")
+        for word in self.all_words:
+            data_line += str(self.all_words[word]) + ","
+            self.all_words[word] = 0
+
+        for c in Keywords.CHARACTERS:
+            data_line += str(email.char_occurences[c]) + ","
+
+        data_line += str(email.email_length) + ","
+
+        #data_line += str(email.case_relation) + ","
+
+        data_line += email.ham
         return data_line
 
-    def get_attributes(self, occurences):
+    def get_attributes(self):
         result =""
-        for word in occurences:
+        for word in self.all_words:
             if (word == "\\"):
-                result += Keywords.ATTRIBUTE + " \"" + Keywords.WORD_FREQ + "\\\\" + "\"" + Keywords.ATTRIBUTE_SUFFIX + Keywords.LINE_FEED
+                result += Keywords.ATTRIBUTE + " \"" + Keywords.WORD_FREQ + "\\\\" + "\"" + Keywords.INT + Keywords.LINE_FEED
             else:
-                result += Keywords.ATTRIBUTE + " \"" + Keywords.WORD_FREQ + word + "\"" + Keywords.ATTRIBUTE_SUFFIX + Keywords.LINE_FEED
+                result += Keywords.ATTRIBUTE + " \"" + Keywords.WORD_FREQ + word + "\"" + Keywords.INT + Keywords.LINE_FEED
+
+        for c in Keywords.CHARACTERS:
+            result += Keywords.ATTRIBUTE + " \"" + Keywords.CHAR_FREQ + c + "\"" + Keywords.INT + Keywords.LINE_FEED
+
+        result += Keywords.ATTRIBUTE + Keywords.EMAIL_LENGTH + Keywords.INT + Keywords.LINE_FEED
+
+        #result += Keywords.ATTRIBUTE + Keywords.CASE_RELATION + Keywords.REAL + Keywords.LINE_FEE
+
         return result
 
     def get_spambase_file(self,path):
@@ -54,32 +65,32 @@ class EmailParser:
         file.write(Keywords.SPAMBASE + Keywords.LINE_FEED)
         return file
 
-
-#    def get_data(self,):
-
     def set_occurences_to_false(self,relative_occurences):
         for key in relative_occurences:
             relative_occurences[key] = False
         return relative_occurences
 
     def parse_emails(self,csv_file):
-        output_path = "spam.arff"
-        absolute_occurences = dict()
-        emails = list()
+        self.emails = list()
         for line in csv_file:
-            email = self.split_email(line, Keywords.DELIMITER_SC)
-            emails.append(email)
-            self.count_words(email["content"],absolute_occurences)
-        ## dict order can change therefore 2 loops
+            email = Email.Email(line)
+            # trying to get empty emails in validation
+            # if(not email.occurrences):
+            #     print("email was empty, continuing")
+            #     continue
+            self.emails.append(email)
+        self.count_words_in_all_emails()
+
+    def write_arff_file(self,output_path):
         arff_file = self.get_spambase_file(output_path)
-        arff_file.write(self.get_attributes(absolute_occurences))
+
+        arff_file.write(self.get_attributes())
+
+        arff_file.write(Keywords.ATTRIBUTE_CLASS + Keywords.LINE_FEED)
         arff_file.write(Keywords.DATA + Keywords.LINE_FEED)
 
-        for email in emails:
-            #print(absolute_occurences)
-            relative_occurences = self.set_occurences_to_false(dict(absolute_occurences))
-            #print(relative_occurences)
-            arff_file.write(self.get_data(email,relative_occurences))
+        for email in self.emails:
+            arff_file.write(self.get_data(email))
 
         arff_file.close()
 
