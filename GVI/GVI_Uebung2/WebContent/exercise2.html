@@ -47,7 +47,7 @@
     * GeoVisualisierung
     *
     * ------------------------------------------------*/
-
+    var adress_data;
     function csvJSON(csv){
       var lines = csv.replace(/\n/g, '');
       lines = lines.split("\r");
@@ -101,21 +101,31 @@
     * Die Methode initialize wird beim Laden der Webseite aufgerufen
     * durch HTML <body onload="initialize()">, siehe unten.
     */
-    function getValue(code, year){
-      fetch('indic_271_eu.csv')
-        .then(response => response.text())
-        .then((data) => {
-          adress_data = csvJSON(data);
-          for (let entry of adress_data) {
-        	  console.log(year + ", " + code);
-        	  console.log(entry["TimePeriod"] + ", " + entry["GeoAreaCode"]);
 
-            if((year == entry["TimePeriod"]) && (code == entry["GeoAreaCode"])){
-        	     console.log("VALUE: " + entry["Value"]);
-               return entry["Value"];
-            }
+    function fetchCsvData(csv) {
+      fetch(csv)
+        .then(response => response.text())
+        .then((data) => {return csvJSON(data)});
+    }
+    function getValue(code, year){
+      for (let entry of adress_data) {
+        jsonYear = parseInt(entry["TimePeriod"], 10);
+        jsonCode = parseInt(entry["GeoAreaCode"], 10);
+        if (year == jsonYear) {
+          console.log("1");
+        } else {
+          console.log(year + " : " + jsonYear);
         }
-      });
+        if (code == jsonCode) {
+          console.log("2");
+        }
+
+
+        if((year == jsonYear) && ( code == jsonCode)){
+    	     console.log("VALUE: " + entry["Value"]);
+           return entry["Value"];
+        }
+      }
     }
     function getColor(d) {
       return d > 50 ? '#800026' :
@@ -177,7 +187,17 @@
         maxZoom: 18
       }).addTo(map);
 
-      L.geoJson(statesData, {style: style}).addTo(map);
+
+        // let data = getValue(fetchCsvData("indic_271_eu.csv"));
+        // console.log(data);
+
+
+      fetch("indic_271_eu.csv")
+        .then(response => response.text())
+        .then((data) => {
+          adress_data = csvJSON(data);
+          L.geoJson(statesData, {style: style}).addTo(map);
+        });
 
 
       // fetch('europe.geojson')
