@@ -12,7 +12,7 @@ def parse_file(buffer_file, min_value):
             attribute_data[raw_data[2]] = 1
         file_line = buffer_file.readline()
 
-        
+    buffer_file.close()
     return attribute_data
 
 
