@@ -1,5 +1,6 @@
 import re
 
+<<<<<<< HEAD
 def parse_file(file_path, min_value):
     buffer_file = open(file_path,'r')
     attribute_data = dict()
@@ -10,7 +11,7 @@ def parse_file(file_path, min_value):
             attribute = raw_data[2]
             try:
                 word = re.search('([^_]*)$', attribute).group(1)
-                attribute_data[word] = 1
+                attribute_data[word] = float(raw_data[0])
             except AttributeError:
                 print("regex parsing error")
         file_line = buffer_file.readline()
