@@ -4,6 +4,7 @@
 
 import Email
 import Keywords
+import bufferParser
 
 def parse_emails(csv_file_handle):
     """Parse passed csv into Email objects and a word count dict"""
