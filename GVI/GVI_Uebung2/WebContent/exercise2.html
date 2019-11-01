@@ -109,12 +109,13 @@
     }
     function getValue(code, year){
       for (let entry of adress_data) {
-        jsonYear = parseInt(entry["TimePeriod"], 10);
-        jsonCode = parseInt(entry["GeoAreaCode"], 10);
+        jsonYear = entry["TimePeriod"];
+        jsonCode = entry["GeoAreaCode"];
+        console.log(jsonYear + ", " + typeof jsonYear + "; " + Number(jsonYear) + ", " + typeof Number(jsonYear));
         if (year == jsonYear) {
           console.log("1");
         } else {
-          console.log(year + " : " + jsonYear);
+          console.log(typeof year + " : " + typeof jsonYear);
         }
         if (code == jsonCode) {
           console.log("2");
