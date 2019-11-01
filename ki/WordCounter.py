@@ -9,7 +9,7 @@ def read_email(path):
 
 def main():
     output_path = "spam.arff"
-    enron_mail = read_email("short_enron4.csv")
+    enron_mail = read_email("enron.csv")
 
 
     # parser = EmailParser.EmailParser()
