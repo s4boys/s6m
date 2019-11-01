@@ -2,39 +2,78 @@
 <html>
 
 <head>
-  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <title>Leaflet</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
-    integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-    crossorigin="" />
-  <style>
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-    }
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>Leaflet</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+          integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+          crossorigin=""/>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
 
-    body {
-      padding: 0;
-      margin: 0;
-    }
+        body {
+            padding: 0;
+            margin: 0;
+        }
 
-    #map_canvas {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+        #map_canvas {
+            width: 100%;
+            height: 90%;
+        }
+
+        .slidecontainer {
+            width: 100%;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 25px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body onload="initialize()">
-  <div id="map_canvas"></div>
-  <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
-    integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
-    crossorigin=""></script>
+<div id="map_canvas"></div>
+<input type="range" min="2000" max="2015" value="2009" class="slider" id="myRange">
+<div class="slider_div">
 
-  <script type="text/javascript" src="states-data.js"></script>
-  <script>
+</div>
+<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+        integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+        crossorigin=""></script>
+
+<script type="text/javascript" src="states-data.js"></script>
+<script>
     /*---------------------------------------------------
     * Hochschule für Technik Stuttgart
     * Fachbereich Vermessung, Informatik und Mathematik
@@ -47,174 +86,161 @@
     * GeoVisualisierung
     *
     * ------------------------------------------------*/
-    var adress_data;
-    function csvJSON(csv){
-      var lines = csv.replace(/\n/g, '');
-      lines = lines.split("\r");
 
-      var result = [];
+    // please dont h8 me for global variables
+    let year;
+    let address_data;
 
-      var headers=lines[0].split(",");
 
-      for(var i=1;i<lines.length;i++){
+    function csvJSON(csv) {
+        var lines = csv.replace(/\n/g, '');
+        lines = lines.split("\r");
 
-        var obj = {};
-        var currentline=lines[i].split(",");
-        for(var j=0;j<headers.length;j++){
-            obj[headers[j]] = currentline[j];
-          }
+        var result = [];
 
-          result.push(obj);
+        var headers = lines[0].split(",");
+
+        for (var i = 1; i < lines.length; i++) {
+
+            var obj = {};
+            var currentline = lines[i].split(",");
+            for (var j = 0; j < headers.length; j++) {
+                obj[headers[j]] = currentline[j];
+            }
+
+            result.push(obj);
 
         }
 
         return result; //JavaScript object
         //return JSON.stringify(result); //JSON
-      }
-
-    function geocode(address){
-      const geocodeUrl = 'https://nominatim.openstreetmap.org/search?q=';
-      const geocodeParams = '&format=json&limit=1';
-
-      var encoded = encodeURI([geocodeUrl, address, geocodeParams].join(''));
-      return $.getJSON(encoded);
     }
-    // function geocode(address) {
-    //     var encoded = encodeURI([geocodeUrl, address, geocodeParams].join(''));
-    //     var xhr = new XMLHttpRequest();
-    //     xhr.open("GET", encoded, true);
-    //     xhr.responseType = 'json';
-    //     xhr.onload = function () {
-    //       if (xhr.response.length == 0) {
-    //         alert("No place found");
-    //         return;
-    //       }
-    //       return xhr.response[0];
-    //     };
-    //     xhr.onerror = function () {
-    //       console.error(xhr.statusText);
-    //     };
-    //     xhr.send();
-    //   }
+
+    function geocode(address) {
+        const geocodeUrl = 'https://nominatim.openstreetmap.org/search?q=';
+        const geocodeParams = '&format=json&limit=1';
+
+        var encoded = encodeURI([geocodeUrl, address, geocodeParams].join(''));
+        return $.getJSON(encoded);
+    }
 
     /**
-    * Die Methode initialize wird beim Laden der Webseite aufgerufen
-    * durch HTML <body onload="initialize()">, siehe unten.
-    */
+     * Die Methode initialize wird beim Laden der Webseite aufgerufen
+     * durch HTML <body onload="initialize()">, siehe unten.
+     */
 
-    function fetchCsvData(csv) {
-      fetch(csv)
-        .then(response => response.text())
-        .then((data) => {return csvJSON(data)});
+    function get_circumcised_value(value) {
+        return value.substring(1, value.length - 1);
     }
-    function getValue(code, year){
-      for (let entry of adress_data) {
-        jsonYear = entry["TimePeriod"];
-        jsonCode = entry["GeoAreaCode"];
-        console.log(jsonYear + ", " + typeof jsonYear + "; " + Number(jsonYear) + ", " + typeof Number(jsonYear));
-        if (year == jsonYear) {
-          console.log("1");
-        } else {
-          console.log(typeof year + " : " + typeof jsonYear);
-        }
-        if (code == jsonCode) {
-          console.log("2");
+
+    function getValue(code) {
+        for (let entry of address_data) {
+            csv_year = get_circumcised_value(entry["TimePeriod"]);
+            csv_code = get_circumcised_value(entry["GeoAreaCode"]);
+            if ((year == csv_year) && (code == csv_code)) {
+                csv_value = get_circumcised_value(entry["Value"]);
+                return csv_value;
+            }
         }
 
-
-        if((year == jsonYear) && ( code == jsonCode)){
-    	     console.log("VALUE: " + entry["Value"]);
-           return entry["Value"];
-        }
-      }
     }
+
     function getColor(d) {
-      return d > 50 ? '#800026' :
-             d > 40  ? '#BD0026' :
-             d > 30  ? '#E31A1C' :
-             d > 20  ? '#FC4E2A' :
-             d > 15   ? '#FD8D3C' :
-             d > 10   ? '#FEB24C' :
-             d > 5   ? '#FED976' :
-                        '#FFEDA0';
+        return d > 70 ? '#008a25' :
+            d > 60 ? '#078a2a' :
+                d > 50 ? '#0f8a30' :
+                    d > 40 ? '#188535' :
+                        d > 30 ? '#248a3f' :
+                            d > 20 ? '#2e8746' :
+                                d > 15 ? '#388a4e' :
+                                    d > 10 ? '#448756' :
+                                        d > 7 ? '#518c61' :
+                                            d > 5 ? '#5f8a6b' :
+                                                d > 3 ? '#73917b' :
+                                                    d > 1 ? '#859489' :
+                                                        919191;
     }
 
     function style(feature) {
-	     return {
-    		fillColor: getColor(getValue(feature.properties.UN, 2002)),
-    		weight: 2,
-    		opacity: 1,
-    		color: 'white',
-    		dashArray: '3',
-    		fillOpacity: 0.7
-	    };
+        return {
+            fillColor: getColor(getValue(feature.properties.UN)),
+            weight: 2,
+            opacity: 1,
+            color: 'white',
+            dashArray: '3',
+            fillOpacity: 0.7
+        };
     }
 
     function initialize() {
         let map;
 
-      /**
-        * zoom level: 0 - 18
-        *
-        * 0 - Weltkarte
-        *  ...
-        * 18 - Einzelgebäue
-        *
-        * siehe https://leafletjs.com/examples/zoom-levels/
-      *
-        * setView:
-        * der erste Paramter definiert den Mittelpunkt der Karte in
-      * Längen- und Breitengrad (Koordinatensystem WGS 84)
-        *
-      * Stuttgart - [48.81, 9.16]
-        * Sidney - [-33.51, 151.12]
-        *
-      */
-      map = L.map('map_canvas').setView([48.75, 9.21], 5);
-      /**
-      * Die Karte basiert auf OpenStreetmap Daten und wird als gekachelte
-      * Rasterkarte bereitgestellt.
-      * Hinweis: In den Beispielen des Leaflet Quickstart Tutorials werden Karten von
-      * MapBox genutzt. Diese sind auch mit einem
-      * Geschäftsmodell verbunden, siehe https://www.mapbox.com/pricing/
-      * https://leafletjs.com/examples/quick-start/
-      *
-      */
+        /**
+         * zoom level: 0 - 18
+         *
+         * 0 - Weltkarte
+         *  ...
+         * 18 - Einzelgebäue
+         *
+         * siehe https://leafletjs.com/examples/zoom-levels/
+         *
+         * setView:
+         * der erste Paramter definiert den Mittelpunkt der Karte in
+         * Längen- und Breitengrad (Koordinatensystem WGS 84)
+         *
+         * Stuttgart - [48.81, 9.16]
+         * Sidney - [-33.51, 151.12]
+         *
+         */
+        map = L.map('map_canvas').setView([48.75, 9.21], 5);
+        /**
+         * Die Karte basiert auf OpenStreetmap Daten und wird als gekachelte
+         * Rasterkarte bereitgestellt.
+         * Hinweis: In den Beispielen des Leaflet Quickstart Tutorials werden Karten von
+         * MapBox genutzt. Diese sind auch mit einem
+         * Geschäftsmodell verbunden, siehe https://www.mapbox.com/pricing/
+         * https://leafletjs.com/examples/quick-start/
+         *
+         */
 
 
-      let osm = new L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-        minZoom: 2,
-        maxZoom: 18
-      }).addTo(map);
+        let osm = new L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+            minZoom: 2,
+            maxZoom: 18
+        }).addTo(map);
+
+        var slider = document.getElementById("myRange")
+        year = slider.value; // Display the default slider value
 
 
-        // let data = getValue(fetchCsvData("indic_271_eu.csv"));
-        // console.log(data);
+        fetch('http://localhost:8003/indic_271_eu.csv')
+            .then(response => response.text())
+            .then((data) => {
+                address_data = csvJSON(data);
 
+                L.geoJson(statesData, {style: style}).addTo(map);
 
-      fetch("indic_271_eu.csv")
-        .then(response => response.text())
-        .then((data) => {
-          adress_data = csvJSON(data);
-          L.geoJson(statesData, {style: style}).addTo(map);
-        });
+            });
+        slider.oninput = function () {
+            year = this.value;
+            fetch('http://localhost:8003/indic_271_eu.csv')
+                .then(response => response.text())
+                .then((data) => {
+                    address_data = csvJSON(data);
 
+                    L.geoJson(statesData, {style: style}).addTo(map);
 
-      // fetch('europe.geojson')
-      //   .then(response => response.text())
-      //   .then((data) => {  L.geoJson(data).addTo(map); });
-
-
-
+                });
+        }
 
     }
-  </script>
-  <script
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous">
-  </script>
+</script>
+<script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous">
+</script>
 </body>
 
 </html>
