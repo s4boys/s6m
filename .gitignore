@@ -93,4 +93,5 @@ pom.xml.tag
 
 .nodemodules
 
-
+# Python
+*.pyc
