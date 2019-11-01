@@ -1,6 +1,5 @@
 import re
 
-<<<<<<< HEAD
 def parse_file(file_path, min_value):
     buffer_file = open(file_path,'r')
     attribute_data = dict()
