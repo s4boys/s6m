@@ -24,8 +24,8 @@ def main():
     # parser.write_arff_file(output_path)
 
     mails, wordcount = nep.parse_emails(enron_mail)
-    correlated_words = bufferParser.parse_file("correlBuffer.txt", 0.1)
-    informative_words = bufferParser.parse_file("infoGain.txt", 0.1)
+    correlated_words = bufferParser.parse_file("correlBuffer.txt", 250)
+    informative_words = bufferParser.parse_file("infoGain.txt", 250)
 
     relevant_words = merge_dicts(correlated_words, informative_words)
 
